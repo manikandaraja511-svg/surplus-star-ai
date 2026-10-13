@@ -1,0 +1,322 @@
+import { useEffect, useState, type ReactNode } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import { format, estimate, outcomeTypes, type FoodRecord, type Outcome } from "./domain";
+const colors = [
+  "var(--chart-prepared)",
+  "var(--chart-served)",
+  "var(--chart-surplus)",
+  "var(--chart-discarded)",
+] as const;
+function ChartFrame({
+  title,
+  description,
+  children,
+  empty,
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+  empty?: string | undefined;
+}) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return (
+    <section className="chart-panel">
+      <h2>{title}</h2>
+      <p>{description}</p>
+      {empty ? (
+        <div className="notice">{empty}</div>
+      ) : (
+        <div className="chart-box">
+          {mounted ? children : <p className="text-xs text-muted-foreground">Loading chart…</p>}
+        </div>
+      )}
+    </section>
+  );
+}
+function Bars({
+  data,
+  keys,
+}: {
+  data: Record<string, string | number>[];
+  keys: { key: string; label: string; color: string }[];
+}) {
+  return (
+    <>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 8, right: 12, left: -15, bottom: 0 }}>
+          <CartesianGrid vertical={false} stroke="var(--border)" />
+          <XAxis
+            dataKey="name"
+            tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <Tooltip
+            contentStyle={{
+              background: "var(--card)",
+              borderColor: "var(--border)",
+              borderRadius: 8,
+              color: "var(--foreground)",
+              fontSize: 12,
+            }}
+            cursor={{ fill: "var(--muted)" }}
+          />
+          {keys.map((k) => (
+            <Bar
+              key={k.key}
+              dataKey={k.key}
+              name={k.label}
+              fill={k.color}
+              radius={[4, 4, 0, 0]}
+              maxBarSize={35}
+            />
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+    </>
+  );
+}
+export function FoodCharts({
+  records,
+  outcomes,
+  analytics = false,
+}: {
+  records: FoodRecord[];
+  outcomes: Outcome[];
+  analytics?: boolean;
+}) {
+  const byItem = Object.values(
+    records.reduce<
+      Record<string, { name: string; prepared: number; served: number; surplus: number }>
+    >((m, r) => {
+      const key = r.name.toLowerCase();
+      const item = m[key] ?? { name: r.name, prepared: 0, served: 0, surplus: 0 };
+      item.prepared += r.prepared;
+      item.served += r.served;
+      item.surplus += estimate(r).surplus;
+      m[key] = item;
+      return m;
+    }, {}),
+  );
+  const categories = Object.values(
+    records.reduce<Record<string, { name: string; surplus: number }>>((m, r) => {
+      const item = m[r.category] ?? { name: r.category, surplus: 0 };
+      item.surplus += estimate(r).surplus;
+      m[r.category] = item;
+      return m;
+    }, {}),
+  );
+  const ids = new Set(records.map((r) => r.id)),
+    filtered = outcomes.filter((o) => ids.has(o.recordId));
+  const outcomeData = outcomeTypes
+    .map((name) => ({
+      name,
+      value: filtered.filter((o) => o.type === name).reduce((s, o) => s + o.quantity, 0),
+    }))
+    .filter((x) => x.value > 0);
+  const daily = Object.values(
+    records.reduce<
+      Record<string, { name: string; date: string; prepared: number; served: number }>
+    >((m, r) => {
+      const d = r.preparedAt.slice(0, 10);
+      m[d] ??= { name: d.slice(5), date: d, prepared: 0, served: 0 };
+      m[d].prepared += r.prepared;
+      m[d].served += r.served;
+      return m;
+    }, {}),
+  ).sort((a, b) => a.date.localeCompare(b.date));
+  const weekly = Object.values(
+    records.reduce<Record<string, { name: string; prepared: number; served: number }>>((m, r) => {
+      const d = new Date(r.preparedAt);
+      d.setUTCHours(0, 0, 0, 0);
+      d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+      const key = d.toISOString().slice(0, 10);
+      m[key] ??= { name: key, prepared: 0, served: 0 };
+      m[key].prepared += r.prepared;
+      m[key].served += r.served;
+      return m;
+    }, {}),
+  ).sort((a, b) => a.name.localeCompare(b.name));
+  const common = [
+    { key: "prepared", label: "Prepared", color: colors[0] },
+    { key: "served", label: "Served", color: colors[1] },
+  ];
+  return (
+    <div className="chart-grid">
+      <ChartFrame
+        title="Prepared vs. served"
+        description="Recorded quantities, grouped by food item. All quantities use the selected unit."
+        empty={!records.length ? "Add food records to compare preparation and service." : undefined}
+      >
+        <Bars data={byItem} keys={common} />
+      </ChartFrame>
+      <ChartFrame
+        title={analytics ? "Highest potential surplus" : "Potential surplus by food item"}
+        description="Prepared minus estimated demand, floored at zero. This is an estimate, not food saved."
+        empty={
+          !records.length
+            ? "Add records with explicit demand estimates to see potential surplus."
+            : undefined
+        }
+      >
+        <Bars
+          data={[...byItem].sort((a, b) => b.surplus - a.surplus).slice(0, 8)}
+          keys={[{ key: "surplus", label: "Potential surplus", color: colors[2] }]}
+        />
+      </ChartFrame>
+      <ChartFrame
+        title="Recorded food outcomes"
+        description="Only quantities actually recorded as outcomes are included. Under review is not counted as saved."
+        empty={
+          !outcomeData.length
+            ? "No outcomes yet. Open an inventory record to track reuse, redistribution, discard or review."
+            : undefined
+        }
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={outcomeData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="48%"
+              innerRadius={65}
+              outerRadius={95}
+              paddingAngle={4}
+            >
+              {outcomeData.map((x) => (
+                <Cell
+                  key={x.name}
+                  fill={colors[outcomeTypes.indexOf(x.name as (typeof outcomeTypes)[number])]}
+                />
+              ))}
+            </Pie>
+            <Tooltip
+              contentStyle={{
+                background: "var(--card)",
+                borderColor: "var(--border)",
+                borderRadius: 8,
+                fontSize: 12,
+              }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </ChartFrame>
+      <ChartFrame
+        title="Daily food trends"
+        description="Prepared and served quantities by recorded date. At least 3 distinct days are needed."
+        empty={
+          daily.length < 3
+            ? `${daily.length} distinct day(s) recorded. Add records across at least 3 days to see a trend.`
+            : undefined
+        }
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={daily} margin={{ top: 12, right: 12, left: -15, bottom: 0 }}>
+            <CartesianGrid vertical={false} stroke="var(--border)" />
+            <XAxis
+              dataKey="name"
+              tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Tooltip
+              contentStyle={{
+                background: "var(--card)",
+                borderColor: "var(--border)",
+                fontSize: 12,
+              }}
+            />
+            <Line
+              type="monotone"
+              dataKey="prepared"
+              name="Prepared"
+              stroke={colors[0]}
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="served"
+              name="Served"
+              stroke={colors[1]}
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartFrame>
+      {analytics && (
+        <>
+          <ChartFrame
+            title="Surplus by food category"
+            description="Potential surplus aggregated by the categories of actual records."
+            empty={!records.length ? "Add categorized food records to compare surplus." : undefined}
+          >
+            <Bars
+              data={categories}
+              keys={[{ key: "surplus", label: "Potential surplus", color: colors[2] }]}
+            />
+          </ChartFrame>
+          <ChartFrame
+            title="Weekly preparation & service"
+            description="Weeks begin on Monday. At least 2 recorded weeks are needed for comparison."
+            empty={
+              weekly.length < 2
+                ? "Add records across at least 2 separate weeks to compare weekly totals. No historical trend is invented."
+                : undefined
+            }
+          >
+            <Bars data={weekly} keys={common} />
+          </ChartFrame>
+        </>
+      )}
+      {records.length > 0 && (
+        <div className="chart-legend">
+          <span>
+            <i className="legend-dot" />
+            Prepared
+          </span>
+          <span>
+            <i className="legend-dot served" />
+            Served
+          </span>
+        </div>
+      )}
+      {outcomeData.length > 0 && (
+        <div className="chart-legend">
+          {outcomeData.map((x) => (
+            <span key={x.name}>
+              {x.name}: {format(x.value)}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,168 @@
+import { Link } from "@tanstack/react-router";
+import { useState, type ReactNode } from "react";
+import {
+  ArrowUpRight,
+  Leaf,
+  Menu,
+  X,
+  LayoutDashboard,
+  Utensils,
+  Sparkles,
+  ChartNoAxesCombined,
+  Bell,
+  FlaskConical,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useFood } from "./store";
+const navigation = [
+  { to: "/", label: "Home" },
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/inventory", label: "Food Inventory" },
+  { to: "/insights", label: "AI Insights" },
+  { to: "/analytics", label: "Analytics" },
+  { to: "/about", label: "About" },
+] as const;
+export function Brand() {
+  return (
+    <Link to="/" className="brand">
+      <span className="brand-mark">
+        <Leaf size={32} strokeWidth={1.5} />
+      </span>
+      <span className="brand-name">
+        FoodWise<span className="brand-ai">AI</span>
+      </span>
+    </Link>
+  );
+}
+export function Header() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <header className="site-header">
+        <Brand />
+        <nav className="desktop-nav" aria-label="Main navigation">
+          {navigation.map((n) => (
+            <Link key={n.to} to={n.to} activeOptions={{ exact: true }} className="nav-link">
+              {n.label}
+            </Link>
+          ))}
+        </nav>
+        <Button asChild variant="brand" className="header-cta">
+          <Link to="/dashboard">
+            Get Started <ArrowUpRight size={15} />
+          </Link>
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mobile-menu-button"
+          aria-label={open ? "Close navigation" : "Open navigation"}
+          onClick={() => setOpen(!open)}
+        >
+          {open ? <X /> : <Menu />}
+        </Button>
+      </header>
+      {open && (
+        <nav className="mobile-nav" aria-label="Mobile navigation">
+          {navigation.map((n) => (
+            <Link key={n.to} to={n.to} className="nav-link" onClick={() => setOpen(false)}>
+              {n.label}
+            </Link>
+          ))}
+        </nav>
+      )}
+    </>
+  );
+}
+export function Footer() {
+  return (
+    <footer className="site-footer">
+      <div>
+        <Brand />
+        <p className="footer-note">Thoughtful planning. Responsible food management.</p>
+      </div>
+      <div className="footer-links">
+        <Link to="/about">About & privacy</Link>
+        <Link to="/alerts">Alert Center</Link>
+        <Link to="/testing">Testing Center</Link>
+      </div>
+      <span className="footer-note">FoodWise AI · Student prototype</span>
+    </footer>
+  );
+}
+const tools = [
+  { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { to: "/inventory", label: "Inventory", icon: Utensils },
+  { to: "/insights", label: "Estimates", icon: Sparkles },
+  { to: "/alerts", label: "Alerts", icon: Bell },
+  { to: "/analytics", label: "Analytics", icon: ChartNoAxesCombined },
+  { to: "/testing", label: "Testing", icon: FlaskConical },
+] as const;
+export function Workspace({ children }: { children: ReactNode }) {
+  const s = useFood();
+  return (
+    <main className="workspace">
+      <nav className="workspace-nav" aria-label="Management tools">
+        {tools.map((t) => (
+          <Link to={t.to} key={t.to}>
+            <t.icon size={14} />
+            {t.label}
+          </Link>
+        ))}
+      </nav>
+      {s.error && (
+        <p role="alert" className="error-message">
+          {s.error}
+        </p>
+      )}
+      {!s.ready ? (
+        <p className="notice">Loading your saved food records…</p>
+      ) : (
+        <>
+          {s.records.some((r) => r.simulated) && (
+            <div className="demo-banner">
+              <Leaf size={16} />
+              <span>
+                Demonstration data is present. Simulated records are labelled and included in
+                calculations; no real-world impact is claimed.
+              </span>
+            </div>
+          )}
+          {children}
+        </>
+      )}
+    </main>
+  );
+}
+export function PageHeading({
+  eyebrow,
+  title,
+  description,
+  actions,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  actions?: ReactNode;
+}) {
+  return (
+    <div className="page-heading">
+      <div>
+        <span className="eyebrow text-positive">{eyebrow}</span>
+        <h1>{title}</h1>
+        <p>{description}</p>
+      </div>
+      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+    </div>
+  );
+}
+export const headFor = (title: string, description: string) => ({
+  meta: [
+    { title: `${title} | FoodWise AI` },
+    { name: "description", content: description },
+    { property: "og:title", content: `${title} | FoodWise AI` },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ],
+});

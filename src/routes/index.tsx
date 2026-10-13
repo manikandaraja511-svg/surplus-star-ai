@@ -1,24 +1,198 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  ArrowUpRight,
+  ArrowRight,
+  Sprout,
+  ChartNoAxesCombined,
+  Utensils,
+  HeartHandshake,
+  GraduationCap,
+  Building2,
+  ChefHat,
+  CalendarDays,
+  Leaf,
+  ShieldCheck,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { headFor } from "@/features/foodwise/shell";
+import hero from "@/assets/food-hero.jpg";
+import story from "@/assets/food-story.jpg";
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () =>
+    headFor(
+      "Make Every Meal Count",
+      "FoodWise AI helps food providers plan demand, identify potential surplus and responsibly track food outcomes.",
+    ),
+  component: Home,
 });
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+const features = [
+  {
+    icon: ChartNoAxesCombined,
+    title: "Smart Demand Estimation",
+    description: "Plan with confidence using your food records and transparent demand estimates.",
+    to: "/insights",
+    action: "Plan smarter",
+  },
+  {
+    icon: Utensils,
+    title: "Surplus Food Detection",
+    description:
+      "Spot potential surplus early and make thoughtful decisions before food goes to waste.",
+    to: "/alerts",
+    action: "Identify surplus",
+  },
+  {
+    icon: Sprout,
+    title: "Waste Reduction Insights",
+    description:
+      "Turn actual preparation and consumption records into practical, meaningful insights.",
+    to: "/analytics",
+    action: "Understand patterns",
+  },
+  {
+    icon: HeartHandshake,
+    title: "Responsible Redistribution",
+    description: "Track reuse and redistribution, always with human review and food safety checks.",
+    to: "/inventory",
+    action: "Track food outcomes",
+  },
+] as const;
+function Home() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main>
+      <section className="hero">
+        <img
+          className="hero-photo"
+          src={hero}
+          alt="Freshly prepared rice, vegetables, chapati and idli arranged on a wooden table"
+          width={1920}
+          height={1024}
+        />
+        <div className="hero-content">
+          <span className="eyebrow">
+            <Leaf size={14} /> A little intelligence. A lot less waste.
+          </span>
+          <h1>
+            Make Every
+            <br />
+            Meal <em>Count.</em>
+          </h1>
+          <p className="hero-subtitle">Smarter food planning. Less waste. A better tomorrow.</p>
+          <p className="hero-description">
+            FoodWise AI helps food providers understand demand, identify potential surplus, and make
+            smarter decisions to reduce avoidable food waste.
+          </p>
+          <div className="hero-buttons">
+            <Button asChild variant="brand" size="lg">
+              <Link to="/dashboard">
+                Explore Dashboard <ArrowUpRight />
+              </Link>
+            </Button>
+            <Button asChild variant="heroOutline" size="lg">
+              <Link to="/inventory">
+                Track Food <ArrowRight />
+              </Link>
+            </Button>
+          </div>
+          <div className="hero-note">
+            <ShieldCheck size={13} /> Transparent estimates. Human-led decisions.
+          </div>
+        </div>
+      </section>
+      <div className="home-audience">
+        <span>Thoughtfully made for food providers</span>
+        <div className="audience-items">
+          <span>
+            <GraduationCap size={16} />
+            College canteens
+          </span>
+          <span>
+            <Building2 size={16} />
+            Hostels
+          </span>
+          <span>
+            <ChefHat size={16} />
+            Restaurants
+          </span>
+          <span>
+            <CalendarDays size={16} />
+            Event organizers
+          </span>
+        </div>
+      </div>
+      <section className="section">
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow text-positive">Good food. Better decisions.</span>
+            <h2>Smarter Food Management</h2>
+          </div>
+          <p>
+            From the first meal planned to the last portion served, make every step more thoughtful.
+          </p>
+        </div>
+        <div className="feature-grid">
+          {features.map((f, i) => (
+            <Link to={f.to} key={f.title} className="feature-card">
+              <div className="flex justify-between items-start">
+                <div className="feature-icon">
+                  <f.icon size={22} strokeWidth={1.5} />
+                </div>
+                <span className="number">0{i + 1}</span>
+              </div>
+              <h3>{f.title}</h3>
+              <p>{f.description}</p>
+              <div className="feature-bottom">
+                {f.action}
+                <ArrowUpRight size={17} />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+      <section className="story-band">
+        <div className="story-copy">
+          <span className="eyebrow">
+            <Sprout size={14} />
+            Small changes. Meaningful choices.
+          </span>
+          <h2>
+            Why Choose
+            <br />
+            FoodWise AI?
+          </h2>
+          <p>
+            Good food deserves a thoughtful plan. Better preparation starts with accurate records,
+            transparent estimates, and an understanding of what people actually need.
+          </p>
+          <p>
+            FoodWise AI brings it all together, helping your team turn everyday food decisions into
+            more responsible habits.
+          </p>
+          <Button asChild variant="heroOutline" className="story-link">
+            <Link to="/about">
+              Discover More <ArrowUpRight />
+            </Link>
+          </Button>
+        </div>
+        <img
+          className="story-photo"
+          src={story}
+          loading="lazy"
+          width={1024}
+          height={1024}
+          alt="Fresh vegetables and a nourishing meal being prepared by hand"
+        />
+      </section>
+      <section className="home-final">
+        <span className="eyebrow justify-center text-positive">A more thoughtful table</span>
+        <h2>Better planning begins with one meal.</h2>
+        <p>Start with your own records, or explore clearly labelled demonstration data.</p>
+        <Button asChild variant="brand" size="lg">
+          <Link to="/inventory">
+            Start Tracking Food <ArrowUpRight />
+          </Link>
+        </Button>
+      </section>
+    </main>
   );
 }
