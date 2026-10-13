@@ -35,7 +35,11 @@ type Store = State & {
   saveSettings: (s: Settings) => void;
   review: (id: string, reviewed: boolean, notes: string) => void;
 };
-const Context = createContext<Store | null>(null);
+// Keep one context instance across hot reloads so provider and consumers always match.
+const contextHolder = globalThis as typeof globalThis & {
+  __foodwiseContext?: React.Context<Store | null>;
+};
+const Context = (contextHolder.__foodwiseContext ??= createContext<Store | null>(null));
 export function FoodProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>(empty),
     [ready, setReady] = useState(false),
