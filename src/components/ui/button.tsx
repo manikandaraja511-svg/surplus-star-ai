@@ -10,7 +10,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         brand: "rounded-full bg-primary text-primary-foreground hover:bg-deep shadow-sm px-6 h-11",
-        heroOutline: "rounded-full border border-hero-text/50 bg-transparent text-hero-text hover:bg-hero-text/10 px-6 h-11",
+        heroOutline:
+          "rounded-full border border-hero-text/50 bg-transparent text-hero-text hover:bg-hero-text/10 px-6 h-11",
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:

@@ -1,7 +1,134 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowUpRight, Leaf } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { headFor } from '@/features/foodwise/shell';
-import story from '@/assets/food-story.jpg';
-export const Route = createFileRoute('/about')({head:()=>headFor('About FoodWise AI','Learn about the FoodWise prototype, transparent estimation, privacy, limitations and human-led food safety.'),component:About});
-function About(){return <main className="workspace"><section className="about-intro"><div><span className="eyebrow text-positive"><Leaf size={14}/>A more thoughtful approach to food</span><h1>Good food deserves<br/>a better plan.</h1><p>FoodWise AI is an AI-assisted food waste management prototype designed to support smarter food preparation, surplus identification, and responsible food management.</p><p>Created for college canteens, hostels, restaurants and event organizers, it brings clear records and explainable estimates to everyday food decisions.</p><Button asChild variant="brand"><Link to="/dashboard">Explore the application <ArrowUpRight/></Link></Button></div><img src={story} alt="Fresh vegetables and a meal prepared with care" width={1024} height={1024} loading="lazy"/></section><div className="about-grid"><section><h2>The problem we address</h2><p>Preparing food without a clear picture of demand can leave avoidable surplus. Incomplete records make it harder to learn from previous service, while untracked outcomes hide what happened to remaining food.</p></section><section><h2>How FoodWise works</h2><p>Record prepared and served quantities, enter demand, and review potential surplus. With 3 earlier records for the same food and unit, a historical demand average becomes available. Record reuse, redistribution, discard or review separately.</p></section><section><h2>Designed for everyday decisions</h2><ul className="list-disc pl-5"><li>Validated inventory records and CSV export</li><li>Dynamic quantity metrics and record-based charts</li><li>Explainable surplus estimates and reviewable alerts</li><li>Human-confirmed redistribution and tracked outcomes</li><li>Isolated, executable tests and labelled sample records</li></ul></section><section><h2>Technology, kept simple</h2><p>This prototype uses React, TypeScript and TanStack Start for the application, Tailwind CSS for the visual system, Zod for validation and Recharts for record-based visualizations. Versioned browser storage keeps records on this device, with no paid API required.</p></section><section><h2>Transparent limitations</h2><p>This is a rule-based prototype, not a trained machine-learning system. Historical averages do not account for seasonality, changing menus or unexpected attendance. Demo thresholds are configurable—not official standards. Simulated data is clearly labelled. No environmental impact figures are inferred.</p><p>There is no shared team account, cloud sync or cross-device access. Quantities are aggregated only within matching units.</p></section><section><h2>Privacy & food safety</h2><p>Records and review notes stay in this browser. Anyone using the same browser profile may access them; avoid personal or sensitive information. Export CSV for a backup. Clearing site data removes saved records.</p><p>FoodWise AI cannot determine food safety. Use-by times are entered by people, not certified by the app. Redistribution requires confirmation of appropriate human food-safety checks; always follow local regulations and responsible supervision.</p></section><section><h2>Future improvements</h2><p>Possible future work includes secure team accounts, shared storage, contextual attendance forecasting and evaluated predictive models with transparent uncertainty. These capabilities are not implemented in this prototype.</p></section><section><h2>A prototype you can inspect</h2><p>Explore sample records, edit quantities and watch estimates change. The Testing Center executes actual validation and calculation tests using isolated fixtures, never your operational records.</p><Button asChild variant="outline"><Link to="/testing">Open Testing Center <ArrowUpRight/></Link></Button></section></div></main>;}
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowUpRight, Leaf } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { headFor } from "@/features/foodwise/shell";
+import story from "@/assets/food-story.jpg";
+export const Route = createFileRoute("/about")({
+  head: () =>
+    headFor(
+      "About FoodWise AI",
+      "Learn about the FoodWise prototype, transparent estimation, privacy, limitations and human-led food safety.",
+    ),
+  component: About,
+});
+function About() {
+  return (
+    <main className="workspace">
+      <section className="about-intro">
+        <div>
+          <span className="eyebrow text-positive">
+            <Leaf size={14} />A more thoughtful approach to food
+          </span>
+          <h1>
+            Good food deserves
+            <br />a better plan.
+          </h1>
+          <p>
+            FoodWise AI is an AI-assisted food waste management prototype designed to support
+            smarter food preparation, surplus identification, and responsible food management.
+          </p>
+          <p>
+            Created for college canteens, hostels, restaurants and event organizers, it brings clear
+            records and explainable estimates to everyday food decisions.
+          </p>
+          <Button asChild variant="brand">
+            <Link to="/dashboard">
+              Explore the application <ArrowUpRight />
+            </Link>
+          </Button>
+        </div>
+        <img
+          src={story}
+          alt="Fresh vegetables and a meal prepared with care"
+          width={1024}
+          height={1024}
+          loading="lazy"
+        />
+      </section>
+      <div className="about-grid">
+        <section>
+          <h2>The problem we address</h2>
+          <p>
+            Preparing food without a clear picture of demand can leave avoidable surplus. Incomplete
+            records make it harder to learn from previous service, while untracked outcomes hide
+            what happened to remaining food.
+          </p>
+        </section>
+        <section>
+          <h2>How FoodWise works</h2>
+          <p>
+            Record prepared and served quantities, enter demand, and review potential surplus. With
+            3 earlier records for the same food and unit, a historical demand average becomes
+            available. Record reuse, redistribution, discard or review separately.
+          </p>
+        </section>
+        <section>
+          <h2>Designed for everyday decisions</h2>
+          <ul className="list-disc pl-5">
+            <li>Validated inventory records and CSV export</li>
+            <li>Dynamic quantity metrics and record-based charts</li>
+            <li>Explainable surplus estimates and reviewable alerts</li>
+            <li>Human-confirmed redistribution and tracked outcomes</li>
+            <li>Isolated, executable tests and labelled sample records</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Technology, kept simple</h2>
+          <p>
+            This prototype uses React, TypeScript and TanStack Start for the application, Tailwind
+            CSS for the visual system, Zod for validation and Recharts for record-based
+            visualizations. Versioned browser storage keeps records on this device, with no paid API
+            required.
+          </p>
+        </section>
+        <section>
+          <h2>Transparent limitations</h2>
+          <p>
+            This is a rule-based prototype, not a trained machine-learning system. Historical
+            averages do not account for seasonality, changing menus or unexpected attendance. Demo
+            thresholds are configurable—not official standards. Simulated data is clearly labelled.
+            No environmental impact figures are inferred.
+          </p>
+          <p>
+            There is no shared team account, cloud sync or cross-device access. Quantities are
+            aggregated only within matching units.
+          </p>
+        </section>
+        <section>
+          <h2>Privacy & food safety</h2>
+          <p>
+            Records and review notes stay in this browser. Anyone using the same browser profile may
+            access them; avoid personal or sensitive information. Export CSV for a backup. Clearing
+            site data removes saved records.
+          </p>
+          <p>
+            FoodWise AI cannot determine food safety. Use-by times are entered by people, not
+            certified by the app. Redistribution requires confirmation of appropriate human
+            food-safety checks; always follow local regulations and responsible supervision.
+          </p>
+        </section>
+        <section>
+          <h2>Future improvements</h2>
+          <p>
+            Possible future work includes secure team accounts, shared storage, contextual
+            attendance forecasting and evaluated predictive models with transparent uncertainty.
+            These capabilities are not implemented in this prototype.
+          </p>
+        </section>
+        <section>
+          <h2>A prototype you can inspect</h2>
+          <p>
+            Explore sample records, edit quantities and watch estimates change. The Testing Center
+            executes actual validation and calculation tests using isolated fixtures, never your
+            operational records.
+          </p>
+          <Button asChild variant="outline">
+            <Link to="/testing">
+              Open Testing Center <ArrowUpRight />
+            </Link>
+          </Button>
+        </section>
+      </div>
+    </main>
+  );
+}

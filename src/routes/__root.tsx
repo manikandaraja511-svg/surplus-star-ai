@@ -81,16 +81,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "FoodWise AI" },
-      { name: "description", content: "Intelligent food planning and responsible food management." },
+      {
+        name: "description",
+        content: "Intelligent food planning and responsible food management.",
+      },
       { property: "og:title", content: "FoodWise AI" },
-      { property: "og:description", content: "Intelligent food planning and responsible food management." },
+      {
+        property: "og:description",
+        content: "Intelligent food planning and responsible food management.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=DM+Sans:wght@400;500;600;700&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,
@@ -124,7 +133,11 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <FoodProvider><Header /><Outlet /><Footer /></FoodProvider>
+      <FoodProvider>
+        <Header />
+        <Outlet />
+        <Footer />
+      </FoodProvider>
     </QueryClientProvider>
   );
 }
